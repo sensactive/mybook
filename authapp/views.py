@@ -1,19 +1,19 @@
 import requests
 from django.contrib import auth
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
-
-# Create your views here.
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from http.cookies import SimpleCookie
-
-from authapp.forms import MyBookUserLoginForm
 from authapp.models import MyBookUser
+
+# Create your views here.
+
 
 
 def loginView(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.sessionCookie:
         books = getBooksList(request.user.sessionCookie)
+        print(request.user.sessionCookie)
         content = {
             'books': books
         }
@@ -49,11 +49,15 @@ def loginView(request):
                 }
             return render(request, 'authapp/booksList.html', content)
         else:
-            # создаем нового пользователя в базе
-            newUser = MyBookUser.objects.create_user(username=email, password=password, email=email)
+            try:
+                # создаем нового пользователя в базе
+                newUser = MyBookUser.objects.create_user(username=email, password=password, email=email)
+            except:
+                return render(request, 'authapp/index.html', {'err': 'Введите правильное имя пользователя или пароль'})
+
             newUser.save()
-            auth.login(request, newUser, backend='django.contrib.auth.backends.ModelBackend') #логинимся
-            return HttpResponseRedirect(reverse('authapp:login'))
+            # auth.login(request, newUser, backend='django.contrib.auth.backends.ModelBackend') #логинимся
+            return redirect('authapp:loginView')
     return render(request, 'authapp/index.html')
 
 def getBooksList(usersCookie):
@@ -61,9 +65,9 @@ def getBooksList(usersCookie):
         'cookie': usersCookie,
         'accept': 'application/json; version=5'
     })
-    print(result.json()['meta'])
+    # print(result.json()['meta'])
     objects = result.json()['objects']
-    books = [b['book'] for b in objects]
+    books = [obj['book'] for obj in objects]
     return books
 
 def logout(request):

@@ -6,7 +6,7 @@ class MyBookUserLoginForm(AuthenticationForm):
 
     class Meta:
         model = MyBookUser
-        fields = ('username', 'password')
+        fields = ('email', 'password')
 
     def __init__(self, *args, **kwargs):
         super(MyBookUserLoginForm, self).__init__(*args, **kwargs)
