@@ -13,12 +13,11 @@ from authapp.models import MyBookUser
 
 def loginView(request):
     if request.user.is_authenticated:
-        print(request.user.sessionCookie)
         books = getBooksList(request.user.sessionCookie)
         content = {
             'books': books
         }
-        return render(request, 'userbooks/booksList.html', content)
+        return render(request, 'authapp/booksList.html', content)
     elif request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
@@ -48,14 +47,14 @@ def loginView(request):
                 content = {
                     'err': 'Вы не зарегистрированы на MyBook.ru'
                 }
-            return render(request, 'userbooks/booksList.html', content)
+            return render(request, 'authapp/booksList.html', content)
         else:
             # создаем нового пользователя в базе
             newUser = MyBookUser.objects.create_user(username=email, password=password, email=email)
             newUser.save()
             auth.login(request, newUser, backend='django.contrib.auth.backends.ModelBackend') #логинимся
-            return render(request, 'userbooks/booksList.html')
-    return render(request, 'userbooks/index.html')
+            return HttpResponseRedirect(reverse('authapp:login'))
+    return render(request, 'authapp/index.html')
 
 def getBooksList(usersCookie):
     result = requests.get('https://mybook.ru/api/bookuserlist/', headers={
