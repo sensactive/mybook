@@ -5,6 +5,19 @@
     <title>Title</title>
 </head>
 <body>
+    {% if err %}
+        {{ err }}
+    {% endif %}
+    {% for book in  books %}
+        {{ book.name }}<br>
+        {{ book.authors_names }}<br>
+        {{ book.default_cover }}<br><br><br>
+    {% endfor %}
+    {% if user.is_authenticated %}
+        <a class="nav-link" href="{% url 'auth:logout' %}">
+            <button>logout</button>
+        </a>
+    {% endif %}
 
 </body>
 </html>

@@ -12,15 +12,19 @@
     <title>Title</title>
 </head>
 <body>
-<form class="col-4 d-flex flex-column m-auto" method="post">
+<form class="col-4 d-flex flex-column m-auto" action="{% url 'authapp:login' %}" method="post">
     {% csrf_token %}
-    <input id="email" name="email" placeholder="email" type="email">
+    <input id="email" name="email" placeholder="email" type="text">
     <input id="password" name="password" placeholder="password" type="password">
+{#    {{ login_form.as_p }}#}
     <button class="col-6 m-auto">login</button>
     {% if err %}
         {{ err }}
     {% endif %}
 </form>
+{% if user.is_authenticated %}
+    {{ user.username }}
+{% endif %}
 </body>
 <script src="{% static 'getCookies.js' %}"></script>
 </html>
