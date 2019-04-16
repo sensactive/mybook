@@ -57,7 +57,7 @@ def loginView(request):
 
             newUser.save()
             # auth.login(request, newUser, backend='django.contrib.auth.backends.ModelBackend') #логинимся
-            return redirect('authapp:loginView')
+            return redirect('auth:login')
     return render(request, 'authapp/index.html')
 
 def getBooksList(usersCookie):
